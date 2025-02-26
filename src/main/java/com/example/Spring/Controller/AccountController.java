@@ -50,6 +50,14 @@ public class AccountController {
         return ResponseEntity.ok(dao.save(account)); 
     }
 
+    @PutMapping("/update/accounts/{username}")
+    public ResponseEntity<Account> updateAccountStory (@PathVariable String username, @RequestBody Account account) {
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        if (!dao.existsById(username)) return ResponseEntity.notFound().build();
+        account.setUsername(username);
+        return ResponseEntity.ok(dao.save(account)); 
+    }
+
     @DeleteMapping("/admin/accounts/{username}")
     public ResponseEntity<Void> deleteAccount (@PathVariable String username) {
         if (!dao.existsById(username)) return ResponseEntity.notFound().build();
@@ -64,5 +72,5 @@ public class AccountController {
         }
         String username = authentication.getName();
         return dao.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-    }   
+    }
 }

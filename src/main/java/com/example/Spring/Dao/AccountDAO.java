@@ -8,4 +8,5 @@ import com.example.Spring.Entity.Account;
 
 public interface AccountDAO extends JpaRepository<Account, String>{
     Optional<Account> findByUsername (String username);
+    Optional<Account> findByEmail(String email);
 }
