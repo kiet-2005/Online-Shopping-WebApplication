@@ -13,7 +13,7 @@ public class Category implements Serializable {
     @Id
     String id;
     String name;
-
+    String image;
     @JsonIgnore
     @OneToMany(mappedBy = "category")
     List<Product> products;

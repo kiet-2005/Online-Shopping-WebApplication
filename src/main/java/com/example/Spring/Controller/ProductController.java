@@ -40,6 +40,11 @@ public class ProductController {
         return dao.findByCategoryId(categoryId);
     }
 
+    @GetMapping("/category/{categoryId}")
+    public List<Product> getByCategory(@PathVariable String categoryId) {
+        return dao.findByCategoryId(categoryId);
+    }
+
     @PostMapping("/admin/products/create")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         return ResponseEntity.ok(dao.save(product));
@@ -60,4 +65,14 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/products/{keyword}")
+    public ResponseEntity<List<Product>> getProductsByKeyword(@PathVariable String keyword) {
+        List<Product> products = dao.findAllByNameLike("%" + keyword + "%");
+        
+        if (products.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(products);
+    }
 }
