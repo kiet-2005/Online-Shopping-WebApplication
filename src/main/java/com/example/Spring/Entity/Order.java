@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -37,4 +36,6 @@ public class Order implements Serializable {
     Account account;
     @OneToMany(mappedBy = "order")
     List<OrderDetail> orderDetails;
+    @Column(name = "status")
+    Integer status;
 }

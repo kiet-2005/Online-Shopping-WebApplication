@@ -2,6 +2,7 @@ package com.example.Spring.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
@@ -16,8 +17,10 @@ public class Product implements Serializable {
     Integer id;
     String name;
     String image;
+    @Min(value = 0, message = "Vui lòng nhập lại giá!")
     Double price;
     String description;
+    @Min(value = 0, message = "Vui lòng nhập lại số lượng!")
     String quantity;
     
     @Temporal(TemporalType.DATE)

@@ -29,25 +29,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers( "/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().permitAll()
-            )
-            .formLogin(form -> form
-                .loginProcessingUrl("/login")
-                .successHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().permitAll())
+                .formLogin(form -> form
+                        .loginProcessingUrl("/login")
+                        .successHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        // .successHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+                        .defaultSuccessUrl("http://localhost:5173/" ,true)
+                        .authorizationEndpoint().baseUri("/oauth2/authorization")
+                );
 
         return http.build();
     }
@@ -84,7 +86,8 @@ public class SecurityConfig {
             if (!passwordEncoder().matches(password, user.getPassword())) {
                 throw new SecurityException("Invalid password");
             }
-            return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
+                    user.getAuthorities());
         };
     }
 }

@@ -1,5 +1,6 @@
 package com.example.Spring.Controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.example.Spring.Entity.OrderDetail;
 import com.example.Spring.Entity.Product;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -75,6 +77,7 @@ public class OrderController {
             order.setAccount(account);
             order.setAddress(request.getAddress());
             order.setCreateDate(new Date());
+            order.setStatus(0);
             dao.save(order);
 
             for (Map.Entry<Product, Integer> entry : productCount.entrySet()) {
@@ -91,5 +94,36 @@ public class OrderController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @PutMapping("/order/update/{id}")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, Integer> request) {
+        Optional<Order> optionalOrder = dao.findById(id);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus(request.get("status"));
+            dao.save(order);
+            return ResponseEntity.ok("Cập nhật trạng thái thành công!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy đơn hàng!");
+    }
+
+    @GetMapping("/order/myorder/{username}")
+    public List<Map<String, Object>> getOrdersByUsername(@PathVariable String username) {
+        List<Object[]> results = daodetail.findProductsByUsername(username);
+        
+        List<Map<String, Object>> response = new ArrayList<>();
+        
+        for (Object[] row : results) {
+            Map<String, Object> orderInfo = new HashMap<>();
+            orderInfo.put("product", row[0]);      // Sản phẩm
+            orderInfo.put("quantity", row[1]);     // Số lượng
+            orderInfo.put("totalPrice", row[2]);   // Tổng giá (price * quantity)
+            orderInfo.put("status", row[3]);       // Trạng thái đơn hàng
+            // orderInfo.put("orderId", row[4]);
+            response.add(orderInfo);
+        }
+        
+        return response;
     }
 }
